@@ -355,7 +355,7 @@ confirm(\'Wirklich löschen?\')
 			<tr><td class="trow1"><strong>Linktitel</strong>
 			<div class="smalltext">Wie soll der Linkname im Menü lauten?</div></td><td class="trow2"><input type="text" name="linktitle" id="linktitle" placeholder="Linktitel" class="textbox" required /> </td></tr>
 				<tr><td class="trow1"><strong>Link</strong>
-				<div class="smalltext">Wie soll der Link lauten? misc.php?wikientry=linkname</div></td><input type="text" name="link" id="link" placeholder="todesser, orden etc." class="textbox" required /></td></tr>
+				<div class="smalltext">Wie soll der Link lauten? misc.php?wikientry=linkname</div></td><td class="trow2"><input type="text" name="link" id="link" placeholder="todesser, orden etc." class="textbox" required /></td></tr>
 			<tr><td class="trow1"><strong>Überschrift</strong></td><td class="trow2"><input type="text" name="title" id="title" placeholder="Überschrift des Artikels" class="textbox" required /></td></tr>
 			<tr><td class="trow1"><strong>Untertitel</strong></td><td class="trow2"><input type="text" name="subtitle" id="subtitle" placeholder="Linktitel" class="textbox" /></td></tr>
 			<tr><td class="trow1" colspan="2"><strong>Wikieintrag</strong></td></tr>
