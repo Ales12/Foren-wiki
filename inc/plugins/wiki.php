@@ -176,7 +176,9 @@ function wiki_install()
 		</tr>
 	</table>
 {$footer}
-</script>
+<script> function askDelete(){
+confirm(\'Wirklich löschen?\')
+} </script>
 </body>
 </html>'),
         'sid'        => '-1',
@@ -187,7 +189,7 @@ function wiki_install()
 
     $insert_array = array(
         'title'        => 'forenwiki_modcp_all_bit',
-        'template'    => $db->escape_string('<tr><td class="trow1" align="center"><strong>{$title}</strong></td><td class="trow2" align="center"><a href="misc.php?wikientry={$link}" target="_blank">{$linktitle}</a></td><td class="trow1" align="center"><a href="modcp.php?action=forenwiki_edit&edit={$wid}">Editieren</a> | <a href="modcp.php?action=forenwiki_all&delete={$wid}">Löschen</a></td></tr>'),
+        'template'    => $db->escape_string('<tr><td class="trow1" align="center"><strong>{$title}</strong></td><td class="trow2" align="center"><a href="misc.php?wikientry={$link}" target="_blank">{$linktitle}</a></td><td class="trow1" align="center"><a href="modcp.php?action=forenwiki_edit&edit={$wid}">Editieren</a> | <a href="modcp.php?action=forenwiki_all&delete={$wid}" onClick="askDelete()">Löschen</a></td></tr>'),
         'sid'        => '-1',
         'version'    => '',
         'dateline'    => TIME_NOW
@@ -223,7 +225,6 @@ function wiki_install()
 		</tr>
 	</table>
 {$footer}
-</script>
 </body>
 </html>'),
         'sid'        => '-1',
@@ -296,7 +297,6 @@ function wiki_install()
 		</tr>
 	</table>
 {$footer}
-</script>
 </body>
 </html>'),
         'sid'        => '-1',
@@ -663,7 +663,7 @@ function wiki_misc()
             if(!empty($row['subtitle'])){
                 $subtitle = $row['subtitle'];
             }
-            
+
             $wikitext = $parser->parse_message($row['wikitext'], $options);
             eval("\$forenwiki_wiki_bit = \"".$templates->get("forenwiki_wiki_bit")."\";");
 
