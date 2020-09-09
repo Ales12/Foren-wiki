@@ -45,7 +45,7 @@ function wiki_install()
             `wikitext` longtext CHARACTER SET utf8 NOT NULL,
                  `uid` int(10) NOT NULL,
                  `accepted` int(10) DEFAULT '0' NOT NULL,
-          PRIMARY KEY (`res_id`)
+          PRIMARY KEY (`wid`)
         ) ENGINE=MyISAM".$db->build_create_table_collation());
     }
 
