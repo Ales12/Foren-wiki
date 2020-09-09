@@ -545,7 +545,7 @@ function wiki_misc()
           $link = $row['link'];
           $linktitle = $row['linktitle'];
 
-          $entry = "<tr><td class='$altbg' align='center'><a href='misc.php?wikientry={$link}'>{$linktitle}</a> </td></tr>";
+          $entry .= "<tr><td class='$altbg' align='center'><a href='misc.php?wikientry={$link}'>{$linktitle}</a> </td></tr>";
       }  eval("\$forenwiki_menu_cat .= \"".$templates->get("forenwiki_menu_cat")."\";");
   }
 
