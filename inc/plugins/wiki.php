@@ -269,7 +269,8 @@ confirm(\'Wirklich löschen?\')
 						<tr>
 							<td class="trow1" valign="top">
 			
-			<form id="edit_wiki" method="post" action="modcp.php?action=forenwiki_edit&edit={$wid}">
+			<form id="edit_wiki" method="post" action="modcp.php?action=forenwiki_edit&edit={$wid}">	
+			<input type="hidden" name="wid" id="wid" value="{$wid}" class="textbox" />
 		<table width="100%">
 			<tr><td class="trow1"><strong>Kategorie</strong></td>
 				<td class="trow2"><select name="category" required>
@@ -526,33 +527,33 @@ function wiki_misc()
     ORDER BY category ASC
     ");
 
-  while($cat = $db->fetch_array($query)){
-      $category = "";
+    while($cat = $db->fetch_array($query)){
+        $category = "";
 
-      $category = $cat['category'];
-      $cid = $cat['cid'];
-      $entry = "";
+        $category = $cat['category'];
+        $cid = $cat['cid'];
+        $entry = "";
 
-      $entry_query = $db->query("SELECT *
+        $entry_query = $db->query("SELECT *
       FROM ".TABLE_PREFIX."wiki_entries
       WHERE cid = '".$cid."'
       AND accepted = 1
       ORDER BY linktitle ASC
       ");
 
-      while($row = $db->fetch_array($entry_query)){
-          $altbg = alt_trow();
-          $link = $row['link'];
-          $linktitle = $row['linktitle'];
+        while($row = $db->fetch_array($entry_query)){
+            $altbg = alt_trow();
+            $link = $row['link'];
+            $linktitle = $row['linktitle'];
 
-          $entry .= "<tr><td class='$altbg' align='center'><a href='misc.php?wikientry={$link}'>{$linktitle}</a> </td></tr>";
-      }  eval("\$forenwiki_menu_cat .= \"".$templates->get("forenwiki_menu_cat")."\";");
-  }
+            $entry .= "<tr><td class='$altbg' align='center'><a href='misc.php?wikientry={$link}'>{$linktitle}</a> </td></tr>";
+        }  eval("\$forenwiki_menu_cat .= \"".$templates->get("forenwiki_menu_cat")."\";");
+    }
 
     eval("\$wiki_menu = \"".$templates->get("forenwiki_menu")."\";");
 
 
-  //Unsere Hauptseite :D
+    //Unsere Hauptseite :D
     if($mybb->get_input('action') == 'wiki')
     {
         $lang->load('wiki');
@@ -566,16 +567,16 @@ function wiki_misc()
         output_page($page);
     }
 
-/*
- * Hier werden die neuen Einträge ins System eingefügt.
- */
+    /*
+     * Hier werden die neuen Einträge ins System eingefügt.
+     */
 
 
 
     if($mybb->get_input('action') == 'add_wiki')
     {
         if ($mybb->user['uid'] == 0) {
-             error_no_permission();
+            error_no_permission();
         }elseif (!is_member($mybb->settings['wiki_allow_groups'])) {
             error_no_permission();
         }        else{
@@ -594,7 +595,7 @@ function wiki_misc()
 
             if($_POST['add_wiki_category']){
                 $new_cat = array(
-                  "category" => $db->escape_string($_POST['category'])
+                    "category" => $db->escape_string($_POST['category'])
                 );
 
                 $db->insert_query("wiki_categories", $new_cat);
@@ -646,7 +647,7 @@ function wiki_misc()
     $wikientry = $mybb->input['wikientry'];
 
     if($wikientry){
-      $name_query = $db->simple_select("wiki_entries", "*", "link = '".$wikientry."' AND accepted = 1");
+        $name_query = $db->simple_select("wiki_entries", "*", "link = '".$wikientry."' AND accepted = 1");
         $name = $db->fetch_array($name_query);
         $wid = $name['wid'];
         $wiki_title = $name['title'];
@@ -713,9 +714,9 @@ function wiki_modcp() {
         "allow_videocode" => 0
     );
 
-/*
- * Hier landen alle Einträge, die von Usern eingereicht wurden und zunächst bearbeitet werden müssen. Ist der Eintrag, so wie er eingereicht wurde, in Ordnung? Wenn ja, dann ab dafür. Wenn nicht, wird er gelöscht und abgelehnt.
- */
+    /*
+     * Hier landen alle Einträge, die von Usern eingereicht wurden und zunächst bearbeitet werden müssen. Ist der Eintrag, so wie er eingereicht wurde, in Ordnung? Wenn ja, dann ab dafür. Wenn nicht, wird er gelöscht und abgelehnt.
+     */
     if($mybb->get_input('action') == 'forenwiki_control') {
         $lang->load('wiki');
         // Add a breadcrumb
@@ -881,7 +882,7 @@ function wiki_modcp() {
     if($mybb->get_input('action') == 'forenwiki_edit') {
         $lang->load('wiki');
         // Add a breadcrumb
-        add_breadcrumb('iki-Einträge edutuereb', "modcp.php?action=forenwiki_edit");
+        add_breadcrumb('Wiki-Einträge editieren', "modcp.php?action=forenwiki_edit");
 
         $wid = $mybb->input['edit'];
 
@@ -896,7 +897,7 @@ function wiki_modcp() {
 
         $row = $db->fetch_array($query);
 
-
+        $wid = "";
         $title = "";
         $wid = "";
         $subtitle = "";
@@ -915,6 +916,7 @@ function wiki_modcp() {
         $wid = $row['wid'];
         $wikitext = $row['wikitext'];
         $cid = $row['cid'];
+        $wid = $row['wid'];
 
 
         $cat_query = $db->query("SELECT *
@@ -938,6 +940,7 @@ function wiki_modcp() {
 
         //Der neue Inhalt wird nun in die Datenbank eingefügt bzw. die alten daten Überschrieben.
         if($_POST['edit_wiki_entry']){
+            $wid = $mybb->input['wid'];
             $edit_entry = array(
                 "cid" => (int)$mybb->input['category'],
                 "linktitle" => $db->escape_string($mybb->input['linktitle']),
@@ -947,7 +950,7 @@ function wiki_modcp() {
                 "wikitext" => $db->escape_string($mybb->input['wikitext']),
             );
 
-            $db->update_query("wiki_entries", $edit_entry);
+            $db->update_query("wiki_entries", $edit_entry, "wid = '".$wid."'");
             redirect("modcp.php?action=forenwiki_all");
         }
 
@@ -956,5 +959,5 @@ function wiki_modcp() {
 
     }
 
-    
+
 }
