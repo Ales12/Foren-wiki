@@ -187,7 +187,7 @@ function wiki_install()
 
     $insert_array = array(
         'title'        => 'forenwiki_modcp_all_bit',
-        'template'    => $db->escape_string('<tr><td class="trow1" align="center"><strong>{$title}</strong></td><td class="trow2" align="center"><a href="misc.php?wikientry={$link}" target="_blank">{$linktitle}</a></td><td class="trow1" align="center"><a href="modcp.php?action=forenwiki_edit&edit={$wid}">Editieren</a> | <a href="modcp.php?action=forenwiki_all&delete={$wid}">Löschen</a></td></tr>}'),
+        'template'    => $db->escape_string('<tr><td class="trow1" align="center"><strong>{$title}</strong></td><td class="trow2" align="center"><a href="misc.php?wikientry={$link}" target="_blank">{$linktitle}</a></td><td class="trow1" align="center"><a href="modcp.php?action=forenwiki_edit&edit={$wid}">Editieren</a> | <a href="modcp.php?action=forenwiki_all&delete={$wid}">Löschen</a></td></tr>'),
         'sid'        => '-1',
         'version'    => '',
         'dateline'    => TIME_NOW
@@ -276,9 +276,14 @@ function wiki_install()
 					{$edit_categories}
 					</select> 
 				</td></tr>
-			<tr><td class="trow1"><strong>Link</strong></td><td class="trow2"><input type="text" name="linktitle" id="linktitle" value="{$linktitle}" class="textbox" required /> <input type="text" name="link" id="link" value="{$link}" class="textbox" required /></td></tr>
-			<tr><td class="trow1"><strong>Überschrift</strong></td><td class="trow2"><input type="text" name="title" id="title" value="{$title}" class="textbox" required /></td></tr>
-			<tr><td class="trow1"><strong>Untertitel</strong></td><td class="trow2"><input type="text" name="subtitle" id="subtitle" value="{$subtitle}" class="textbox" /></td></tr>
+			<tr><td class="trow1"><strong>Linkname</strong>
+			<div class="smalltext">Wie soll der Link im Menü stehen?</div></td><td class="trow2"><input type="text" name="linktitle" id="linktitle" value="{$linktitle}" class="textbox" required /> </td></tr>
+			<tr><td class="trow1"><strong>Link</strong>
+			<div class="smalltext">Wie soll der Link lauten? misc.php?wikientry=linkname</div></td><input type="text" name="link" id="link" value="{$link}" class="textbox" required /></td></tr>
+			<tr><td class="trow1"><strong>Überschrift</strong>
+			<div class="smalltext">Wie soll die Überschrift lauten?</div></td><td class="trow2"><input type="text" name="title" id="title" value="{$title}" class="textbox" required /></td></tr>
+			<tr><td class="trow1"><strong>Untertitel</strong>
+			<div class="smalltext">wenn ein Untertitel vorhanden ist, wie soll diser lauten</div></td><td class="trow2"><input type="text" name="subtitle" id="subtitle" value="{$subtitle}" class="textbox" /></td></tr>
 			<tr><td class="trow1" colspan="2"><strong>Wikieintrag</strong></td></tr>
 			<tr><td class="trow2" colspan="2"><textarea class="textarea" name="wikitext" id="wikitext" rows="6" cols="30" style="width: 95%">{$wikitext}</textarea></td></tr>
 			<tr><td class="tcat" colspan="2" align="center"><input type="submit" name="edit_wiki_entry" value="Eintrag editieren" id="submit" class="button"></td></tr>
@@ -347,7 +352,10 @@ function wiki_install()
 					{$categories}
 					</select> 
 				</td></tr>
-			<tr><td class="trow1"><strong>Link</strong></td><td class="trow2"><input type="text" name="linktitle" id="linktitle" placeholder="Linktitel" class="textbox" required /> <input type="text" name="link" id="link" placeholder="todesser, orden etc." class="textbox" required /></td></tr>
+			<tr><td class="trow1"><strong>Linktitel</strong>
+			<div class="smalltext">Wie soll der Linkname im Menü lauten?</div></td><td class="trow2"><input type="text" name="linktitle" id="linktitle" placeholder="Linktitel" class="textbox" required /> </td></tr>
+				<tr><td class="trow1"><strong>Link</strong>
+				<div class="smalltext">Wie soll der Link lauten? misc.php?wikientry=linkname</div></td><input type="text" name="link" id="link" placeholder="todesser, orden etc." class="textbox" required /></td></tr>
 			<tr><td class="trow1"><strong>Überschrift</strong></td><td class="trow2"><input type="text" name="title" id="title" placeholder="Überschrift des Artikels" class="textbox" required /></td></tr>
 			<tr><td class="trow1"><strong>Untertitel</strong></td><td class="trow2"><input type="text" name="subtitle" id="subtitle" placeholder="Linktitel" class="textbox" /></td></tr>
 			<tr><td class="trow1" colspan="2"><strong>Wikieintrag</strong></td></tr>
@@ -452,6 +460,7 @@ function wiki_activate()
     require MYBB_ROOT."/inc/adminfunctions_templates.php";
     find_replace_templatesets("header", "#".preg_quote('{$menu_calendar}')."#i", '{$menu_calendar} {$forenwiki_header} ');
     find_replace_templatesets("header", "#".preg_quote('<navigation>')."#i", '{$new_wiki_alert} <navigation>');
+    find_replace_templatesets("modcp_nav", "#".preg_quote('{$modcp_nav_users}')."#i", '{$modcp_nav_users}{$modcp_nav_wiki}');
 }
 
 function wiki_deactivate()
@@ -459,6 +468,7 @@ function wiki_deactivate()
     require MYBB_ROOT."/inc/adminfunctions_templates.php";
     find_replace_templatesets("header", "#".preg_quote('{$forenwiki_header}')."#i", '', 0);
     find_replace_templatesets("header", "#".preg_quote('{$new_wiki_alert}')."#i", '', 0);
+    find_replace_templatesets("modcp_nav", "#".preg_quote('{$modcp_nav_wiki}')."#i", '', 0);
 }
 
 //Alerts und Link für die Hauptseite
@@ -650,7 +660,10 @@ function wiki_misc()
 
         while($row = $db->fetch_array($query)){
             $title = $row['title'];
-            $subtitle = $row['subtitle'];
+            if(!empty($row['subtitle'])){
+                $subtitle = $row['subtitle'];
+            }
+            
             $wikitext = $parser->parse_message($row['wikitext'], $options);
             eval("\$forenwiki_wiki_bit = \"".$templates->get("forenwiki_wiki_bit")."\";");
 
