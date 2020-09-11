@@ -161,6 +161,16 @@ function wiki_install()
 					</tr>
 						<tr>
 							<td class="trow1" valign="top">
+															<form id="wiki_filter" method="post" action="modcp.php?action=forenwiki_all">
+				<table><td class="smalltext">Filtern nach:</td>	
+								<td><select name="filter_category">
+				<option value="%" selected>Alle Kategorien</option>
+{$cat_select}
+				</select></td><td  align="center">
+<input type="submit" name="wiki_filter" value="Filtern" id="submit" class="button"></td>
+					</tr>
+			</table>
+	</form>
 								<table width="100%">
 									<tr>
 										<td class="tcat"><strong>{$lang->forenwiki_entry}</strong></td>
@@ -518,7 +528,7 @@ function wiki_misc()
 
     //Nur den Gruppen, die es erlaubt ist, neue Einträge zu machen, ist es erlaubt, den Link zu sehen.
     if (is_member($mybb->settings['wiki_allow_groups'])) {
-        $add_entry = "<tr><td class=\"trow1\" align=\"center\"><a href=\"misc.php?action=add_wiki\">Eintrag hinzufügen</a></td></tr>";
+        $add_entry = "<tr><td class=\"trow1\"  style='padding-left: 5px;'>&raquo; <a href=\"misc.php?action=add_wiki\">Eintrag hinzufügen</a></td></tr>";
     }
 
     //Generieren wir uns mal das Menü, welches sich Automatisch erweitert, wenn neue Einträge in der Datenbank erscheinen.
@@ -546,7 +556,7 @@ function wiki_misc()
             $link = $row['link'];
             $linktitle = $row['linktitle'];
 
-            $entry .= "<tr><td class='$altbg' align='center'><a href='misc.php?wikientry={$link}'>{$linktitle}</a> </td></tr>";
+            $entry .= "<tr><td class='$altbg' style='padding-left: 5px;'>&raquo; <a href='misc.php?wikientry={$link}'>{$linktitle}</a> </td></tr>";
         }  eval("\$forenwiki_menu_cat .= \"".$templates->get("forenwiki_menu_cat")."\";");
     }
 
@@ -699,7 +709,7 @@ function wiki_modcp_nav(){
 $plugins->add_hook("modcp_start", "wiki_modcp");
 function wiki_modcp() {
 
-    global $mybb, $templates, $lang, $header, $headerinclude, $footer, $application, $db, $page, $options, $modcp_nav, $edit_categories, $select;
+    global $mybb, $templates, $lang, $header, $headerinclude, $footer, $application, $db, $page, $options, $modcp_nav, $edit_categories, $select, $cat_select;
     require_once MYBB_ROOT."inc/datahandlers/pm.php";
     $pmhandler = new PMDataHandler();
     require_once MYBB_ROOT."inc/class_parser.php";;
@@ -834,6 +844,21 @@ function wiki_modcp() {
         // Add a breadcrumb
         add_breadcrumb('Alle Wiki-Einträge', "modcp.php?action=forenwiki_all");
 
+        $cat_query = $db->query("SELECT *
+            FROM ".TABLE_PREFIX."wiki_categories
+            ORDER BY category ASC
+            ");
+
+        while($row = $db->fetch_array($cat_query)){
+            $cat_select .= "<option value='{$row['cid']}'>{$row['category']}</option>";
+        }
+
+        $cid = "%";
+
+        if(isset($_POST['wiki_filter'])) {
+            $cid = $_POST['filter_category'];
+        }
+
         $query = $db->query("SELECT *
         FROM ".TABLE_PREFIX."wiki_entries e
         LEFT JOIN ".TABLE_PREFIX."wiki_categories c
@@ -841,6 +866,8 @@ function wiki_modcp() {
         LEFT JOIN ".TABLE_PREFIX."users u
         on (e.uid = u.uid)
         WHERE e.accepted =1
+        and c.cid LIKE '".$cid."'
+          ORDER BY c.category ASC
         ");
 
         while($row = $db->fetch_array($query)){
@@ -850,10 +877,11 @@ function wiki_modcp() {
             $subtitle = "";
             $link = "";
             $linktitle ="";
+            $category = "";
 
 
             //Füllen wir mal alles mit Informationen
-
+            $category = $row['category'];
             $title = $row['title'];
             $subtitle = $row['subtitle'];
             $link = $row['link'];
@@ -893,6 +921,8 @@ function wiki_modcp() {
         LEFT JOIN ".TABLE_PREFIX."users u
         on (e.uid = u.uid)
         WHERE e.wid = '".$wid."'
+      
+    
         ");
 
         $row = $db->fetch_array($query);
@@ -904,6 +934,7 @@ function wiki_modcp() {
         $link = "";
         $linktitle ="";
         $wikitext = "";
+
         $user = "";
 
         //Füllen wir mal alles mit Informationen
@@ -917,6 +948,7 @@ function wiki_modcp() {
         $wikitext = $row['wikitext'];
         $cid = $row['cid'];
         $wid = $row['wid'];
+
 
 
         $cat_query = $db->query("SELECT *
