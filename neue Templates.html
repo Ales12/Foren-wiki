@@ -1,0 +1,101 @@
+//forenwiki_modcp_cat_edit
+
+<html>
+<head>
+	<title>{$mybb->settings['bbname']} - {$lang->forenwiki_edit}</title>
+{$headerinclude}
+</head>
+<body>
+	{$header}
+	<table width="100%" border="0" align="center">
+		<tr>
+			{$modcp_nav}
+			<td valign="top">
+					<table border="0" cellspacing="{$theme['borderwidth']}" cellpadding="{$theme['tablespace']}" class="tborder">
+					<tr>
+						<td class="thead"><strong>{$lang->forenwiki_edit}</strong></td>
+					</tr>
+						<tr>
+							<td class="trow1" valign="top" align="center">
+<form id="edit_category" method="post" action="modcp.php?action=forenwiki_cat_edit&cat_edit={$cid}">
+	<input type="hidden" name="cid" id="cid" value="{$cid}" class="textbox" required /> 
+		<table width="90%">
+			<tr><td class="trow1"><strong>Kategorie</strong></td>
+				<td class="trow2"><input type="text" name="category" id="category" value="{$category}" class="textbox" required /> 
+				</td></tr>
+			<tr><td class="tcat" colspan="2" align="center"><input type="submit" name="edit_wiki_category" value="Eintrag einreichen" id="submit" class="button"></td></tr>
+		</table>
+</form><br />
+							</td>
+						</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+{$footer}
+</body>
+</html>
+
+//forenwiki_modcp_cat_bit
+
+<tr><td class="trow1" align="center"><strong>{$category}</strong></td><td class="trow2" align="center">{$cat_options}</td></tr>
+
+// forenwiki_modcp_all
+<html>
+<head>
+	<title>{$mybb->settings['bbname']} - {$lang->forenwiki_all}</title>
+{$headerinclude}
+</head>
+<body>
+	{$header}
+	<table width="100%" border="0" align="center">
+		<tr>
+			{$modcp_nav}
+			<td valign="top">
+					<table border="0" cellspacing="{$theme['borderwidth']}" cellpadding="{$theme['tablespace']}" class="tborder">
+					<tr>
+						<td class="thead"><h1>{$lang->forenwiki_all_entry}</h1></td>
+					</tr>
+						<tr><td><h2>Kategorien</h2></td></tr>
+						<tr><td>
+												<table width="100%" style="	border-collapse: collapse;">
+								<tr>
+										<td class="tcat" width="33%" align="center"><strong>{$lang->forenwiki_category}</strong></td>
+										<td class="tcat" width="33%" align="center"><strong>{$lang->forenwiki_options}</strong></td>
+																	</tr>
+									{$modcp_cat_bit}
+								</table>
+							</td></tr>
+								<tr><td><h2>Einträge</h2></td></tr>
+						<tr>
+							<td class="trow1" valign="top" align="center">
+								<form id="wiki_filter" method="post" action="modcp.php?action=forenwiki_all">
+				<table><td class="smalltext">Filtern nach:</td>	
+								<td><select name="filter_category">
+				<option value="%" selected>Alle Kategorien</option>
+{$cat_select}
+				</select></td><td  align="center">
+<input type="submit" name="wiki_filter" value="Filtern" id="submit" class="button"></td>
+					</tr>
+			</table>
+	</form>
+								<table width="100%" style="	border-collapse: collapse;">
+								<tr>
+										<td class="tcat" width="33%" align="center"><strong>{$lang->forenwiki_entry}</strong></td>
+										<td class="tcat" width="33%" align="center"><strong>{$lang->forenwiki_category}</strong></td>
+										<td class="tcat" width="33%" align="center"><strong>{$lang->forenwiki_options}</strong></td>
+									</tr>
+									{$modcp_all_bit}
+								</table>
+							</td>
+						</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+{$footer}
+<script> function askDelete(){
+confirm('Wirklich löschen?')
+} </script>
+</body>
+</html>
