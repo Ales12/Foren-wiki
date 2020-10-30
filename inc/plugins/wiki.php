@@ -157,11 +157,22 @@ function wiki_install()
 			<td valign="top">
 					<table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
 					<tr>
-						<td class="thead"><strong>{$lang->forenwiki_all_entry}</strong></td>
+						<td class="thead"><h1>{$lang->forenwiki_all_entry}</h1></td>
 					</tr>
+						<tr><td><h2>Kategorien</h2></td></tr>
+						<tr><td>
+												<table width="100%" style="	border-collapse: collapse;">
+								<tr>
+										<td class="tcat" width="33%" align="center"><strong>{$lang->forenwiki_category}</strong></td>
+										<td class="tcat" width="33%" align="center"><strong>{$lang->forenwiki_options}</strong></td>
+																	</tr>
+									{$modcp_cat_bit}
+								</table>
+							</td></tr>
+								<tr><td><h2>Einträge</h2></td></tr>
 						<tr>
-							<td class="trow1" valign="top">
-															<form id="wiki_filter" method="post" action="modcp.php?action=forenwiki_all">
+							<td class="trow1" valign="top" align="center">
+								<form id="wiki_filter" method="post" action="modcp.php?action=forenwiki_all">
 				<table><td class="smalltext">Filtern nach:</td>	
 								<td><select name="filter_category">
 				<option value="%" selected>Alle Kategorien</option>
@@ -171,11 +182,11 @@ function wiki_install()
 					</tr>
 			</table>
 	</form>
-								<table width="100%">
-									<tr>
-										<td class="tcat"><strong>{$lang->forenwiki_entry}</strong></td>
-										<td class="tcat"><strong>{$lang->forenwiki_link}</strong></td>
-										<td class="tcat"><strong>{$lang->forenwiki_options}</strong></td>
+								<table width="100%" style="	border-collapse: collapse;">
+								<tr>
+										<td class="tcat" width="33%" align="center"><strong>{$lang->forenwiki_entry}</strong></td>
+										<td class="tcat" width="33%" align="center"><strong>{$lang->forenwiki_category}</strong></td>
+										<td class="tcat" width="33%" align="center"><strong>{$lang->forenwiki_options}</strong></td>
 									</tr>
 									{$modcp_all_bit}
 								</table>
@@ -198,8 +209,60 @@ confirm(\'Wirklich löschen?\')
     $db->insert_query("templates", $insert_array);
 
     $insert_array = array(
-        'title'        => 'forenwiki_modcp_all_bit',
-        'template'    => $db->escape_string('<tr><td class="trow1" align="center"><strong>{$title}</strong></td><td class="trow2" align="center"><a href="misc.php?wikientry={$link}" target="_blank">{$linktitle}</a></td><td class="trow1" align="center"><a href="modcp.php?action=forenwiki_edit&edit={$wid}">Editieren</a> | <a href="modcp.php?action=forenwiki_all&delete={$wid}" onClick="askDelete()">Löschen</a></td></tr>'),
+    'title'        => 'forenwiki_modcp_all_bit',
+    'template'    => $db->escape_string('<tr><td class="trow1" align="center"><strong>{$title}</strong></td><td class="trow2" align="center"><a href="misc.php?wikientry={$link}" target="_blank">{$linktitle}</a></td><td class="trow1" align="center"><a href="modcp.php?action=forenwiki_edit&edit={$wid}">Editieren</a> | <a href="modcp.php?action=forenwiki_all&delete={$wid}" onClick="askDelete()">Löschen</a></td></tr>'),
+    'sid'        => '-1',
+    'version'    => '',
+    'dateline'    => TIME_NOW
+);
+    $db->insert_query("templates", $insert_array);
+
+    $insert_array = array(
+        'title'        => 'forenwiki_modcp_cat_bit',
+        'template'    => $db->escape_string('<tr><td class="trow1" align="center"><strong>{$category}</strong></td><td class="trow2" align="center">{$cat_options}</td></tr>'),
+        'sid'        => '-1',
+        'version'    => '',
+        'dateline'    => TIME_NOW
+    );
+    $db->insert_query("templates", $insert_array);
+
+    $insert_array = array(
+        'title'        => 'forenwiki_modcp_cat_edit',
+        'template'    => $db->escape_string('<html>
+<head>
+	<title>{$mybb->settings[\'bbname\']} - {$lang->forenwiki_edit}</title>
+{$headerinclude}
+</head>
+<body>
+	{$header}
+	<table width="100%" border="0" align="center">
+		<tr>
+			{$modcp_nav}
+			<td valign="top">
+					<table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
+					<tr>
+						<td class="thead"><strong>{$lang->forenwiki_edit}</strong></td>
+					</tr>
+						<tr>
+							<td class="trow1" valign="top" align="center">
+<form id="edit_category" method="post" action="modcp.php?action=forenwiki_cat_edit&cat_edit={$cid}">
+	<input type="hidden" name="cid" id="cid" value="{$cid}" class="textbox" required /> 
+		<table width="90%">
+			<tr><td class="trow1"><strong>Kategorie</strong></td>
+				<td class="trow2"><input type="text" name="category" id="category" value="{$category}" class="textbox" required /> 
+				</td></tr>
+			<tr><td class="tcat" colspan="2" align="center"><input type="submit" name="edit_wiki_category" value="Eintrag einreichen" id="submit" class="button"></td></tr>
+		</table>
+</form><br />
+							</td>
+						</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+{$footer}
+</body>
+</html>'),
         'sid'        => '-1',
         'version'    => '',
         'dateline'    => TIME_NOW
@@ -502,7 +565,7 @@ function wiki_global(){
         }
     }
 
-    $forenwiki_header = "<li><a href=\"{$mybb->settings['bburl']}/misc.php?action=wiki\" class=\"help\">{$lang->toplinks_forenwiki}</a></li>";
+    eval("\$forenwiki_header .= \"".$templates->get("forenwiki_header")."\";");
 
 }
 
@@ -662,7 +725,7 @@ function wiki_misc()
         $wid = $name['wid'];
         $wiki_title = $name['title'];
 
-        add_breadcrumb('Foren-Wiki', "misc.php?wikientry={$wikientry}");
+        add_breadcrumb('Neverland\'s Bibliothek', "misc.php?wikientry={$wikientry}");
 
         $query = $db->query("SELECT *
         FROM ".TABLE_PREFIX."wiki_entries
@@ -851,6 +914,10 @@ function wiki_modcp() {
 
         while($row = $db->fetch_array($cat_query)){
             $cat_select .= "<option value='{$row['cid']}'>{$row['category']}</option>";
+            $category = $row['category'];
+            $cid = $row['cid'];
+            $cat_options = "<a href=\"modcp.php?action=forenwiki_cat_edit&cat_edit={$cid}\">Editieren</a> | <a href=\"modcp.php?action=forenwiki_all&cat_delete={$cid}\">Löschen</a>";
+            eval("\$modcp_cat_bit .= \"".$templates->get("forenwiki_modcp_cat_bit")."\";");
         }
 
         $cid = "%";
@@ -895,6 +962,12 @@ function wiki_modcp() {
             $db->delete_query("wiki_entries", "wid = '$delete'");
             redirect("modcp.php?action=forenwiki_all");
         }
+        //Kategorie löschen
+        if($delete = $mybb->input['cat_delete']){
+            $db->delete_query("wiki_categories", "cid = '$delete'");
+            redirect("modcp.php?action=forenwiki_all");
+        }
+
 
         eval("\$page = \"".$templates->get("forenwiki_modcp_all")."\";");
         output_page($page);
@@ -989,6 +1062,42 @@ function wiki_modcp() {
         eval("\$page = \"".$templates->get("forenwiki_modcp_edit")."\";");
         output_page($page);
 
+    }
+
+    //Kategorie Editieren
+    if($mybb->get_input('action') == 'forenwiki_cat_edit') {
+        $lang->load('wiki');
+        // Add a breadcrumb
+        add_breadcrumb('Kategorie editieren', "modcp.php?action=forenwiki_cat_edit");
+
+        $cid = $mybb->input['cat_edit'];
+
+        $query = $db->query("SELECT *
+        FROM " . TABLE_PREFIX . "wiki_categories c
+          WHERE cid = '" . $cid . "'
+         
+        ");
+
+        $row = $db->fetch_array($query);
+
+        $category = "";
+
+        $category = $row['category'];
+
+
+        //Der neue Inhalt wird nun in die Datenbank eingefügt bzw. die alten daten Überschrieben.
+        if ($_POST['edit_wiki_category']) {
+            $cid = $mybb->input['cid'];
+            $edit_entry = array(
+                "category" => $db->escape_string($mybb->input['category']),
+            );
+
+            $db->update_query("wiki_categories", $edit_entry, "cid = '" . $cid . "'");
+            redirect("modcp.php?action=forenwiki_all");
+        }
+
+        eval("\$page = \"" . $templates->get("forenwiki_modcp_cat_edit") . "\";");
+        output_page($page);
     }
 
 
