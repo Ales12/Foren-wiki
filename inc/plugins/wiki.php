@@ -171,7 +171,7 @@ function wiki_install()
 								<tr><td><h2>Einträge</h2></td></tr>
 						<tr>
 							<td class="trow1" valign="top" align="center">
-								<form id="wiki_filter" method="post" action="modcp.php?action=forenwiki_all">
+								<form id="wiki_filter" method="get" action="modcp.php?action=forenwiki_all">
 				<table><td class="smalltext">Filtern nach:</td>	
 								<td><select name="filter_category">
 				<option value="%" selected>Alle Kategorien</option>
