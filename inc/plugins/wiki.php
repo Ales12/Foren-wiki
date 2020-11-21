@@ -171,7 +171,7 @@ function wiki_install()
 								<tr><td><h2>Einträge</h2></td></tr>
 						<tr>
 							<td class="trow1" valign="top" align="center">
-								<form id="wiki_filter" method="get" action="modcp.php?action=forenwiki_all">
+								<form id="wiki_filter" method="post" action="modcp.php?action=forenwiki_all">
 				<table><td class="smalltext">Filtern nach:</td>	
 								<td><select name="filter_category">
 				<option value="%" selected>Alle Kategorien</option>
@@ -587,6 +587,16 @@ function wiki_misc()
         "nl2br" => 1,
         "allow_videocode" => 0
     );
+    $mybb->input['action'] = $mybb->get_input('action');
+    switch($mybb->input['action'])
+    {
+        case "wiki":
+            add_breadcrumb($lang->foren_wiki);
+            break;
+        case "wiki_add":
+            add_breadcrumb($lang->add_wiki);
+            break;
+    }
 
     //Nur den Gruppen, die es erlaubt ist, neue Einträge zu machen, ist es erlaubt, den Link zu sehen.
     if (is_member($mybb->settings['wiki_allow_groups'])) {
@@ -719,12 +729,22 @@ function wiki_misc()
     $wikientry = $mybb->input['wikientry'];
 
     if($wikientry){
+
+
+
+
         $name_query = $db->simple_select("wiki_entries", "*", "link = '".$wikientry."' AND accepted = 1");
         $name = $db->fetch_array($name_query);
         $wid = $name['wid'];
         $wiki_title = $name['title'];
 
-        add_breadcrumb('Wiki-Eintrag', "misc.php?wikientry={$wikientry}");
+
+        switch($mybb->input['wikientry'])
+        {
+            case $wikientry:
+                add_breadcrumb($wiki_title);
+                break;
+        }
 
         $query = $db->query("SELECT *
         FROM ".TABLE_PREFIX."wiki_entries
