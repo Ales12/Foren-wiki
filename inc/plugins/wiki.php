@@ -724,7 +724,7 @@ function wiki_misc()
         $wid = $name['wid'];
         $wiki_title = $name['title'];
 
-        add_breadcrumb('Neverland\'s Bibliothek', "misc.php?wikientry={$wikientry}");
+        add_breadcrumb('Wiki-Eintrag', "misc.php?wikientry={$wikientry}");
 
         $query = $db->query("SELECT *
         FROM ".TABLE_PREFIX."wiki_entries
