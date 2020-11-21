@@ -197,9 +197,6 @@ function wiki_install()
 		</tr>
 	</table>
 {$footer}
-<script> function askDelete(){
-confirm(\'Wirklich löschen?\')
-} </script>
 </body>
 </html>'),
         'sid'        => '-1',
