@@ -587,16 +587,8 @@ function wiki_misc()
         "nl2br" => 1,
         "allow_videocode" => 0
     );
-    $mybb->input['action'] = $mybb->get_input('action');
-    switch($mybb->input['action'])
-    {
-        case "wiki":
-            add_breadcrumb($lang->foren_wiki);
-            break;
-        case "wiki_add":
-            add_breadcrumb($lang->add_wiki);
-            break;
-    }
+
+
 
     //Nur den Gruppen, die es erlaubt ist, neue Einträge zu machen, ist es erlaubt, den Link zu sehen.
     if (is_member($mybb->settings['wiki_allow_groups'])) {
@@ -641,9 +633,12 @@ function wiki_misc()
         $lang->load('wiki');
         // Do something, for example I'll create a page using the hello_world_template
 
-        // Add a breadcrumb
-        add_breadcrumb('Foren-Wiki', "misc.php?action=wiki");
-
+        switch($mybb->input['action'])
+        {
+            case "wiki":
+                add_breadcrumb($lang->foren_wiki);
+                break;
+        }
 
         eval("\$page = \"".$templates->get("forenwiki")."\";");
         output_page($page);
@@ -657,13 +652,20 @@ function wiki_misc()
 
     if($mybb->get_input('action') == 'add_wiki')
     {
+        $lang->load('wiki');
+
+
         if ($mybb->user['uid'] == 0) {
             error_no_permission();
         }elseif (!is_member($mybb->settings['wiki_allow_groups'])) {
             error_no_permission();
         }        else{
-            add_breadcrumb('Wiki-Eintrag hinzufügen', "misc.php?action=add_wiki");
-
+            switch($mybb->input['action'])
+            {
+                case "add_wiki":
+                    add_breadcrumb($lang->add_wiki);
+                    break;
+            }
             if($mybb->usergroup['canmodcp'] == 1){
                 $new_cat = "<form id=\"add_category\" method=\"post\" action=\"misc.php?action=add_wiki\">
 		<table width=\"90%\"><tr><td class=\"thead\" colspan=\"2\"><strong>{$lang->formular_category}</strong></td></tr>
