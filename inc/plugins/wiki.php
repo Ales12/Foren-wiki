@@ -124,7 +124,6 @@ function wiki_install()
 	<tr><td class="trow1"><a href="misc.php?action=wiki">Hauptseite</td></tr>
 	{$add_entry}
 	{$forenwiki_menu_cat}
-
 </table>'),
         'sid'        => '-1',
         'version'    => '',
@@ -197,6 +196,9 @@ function wiki_install()
 		</tr>
 	</table>
 {$footer}
+<script> function askDelete(){
+confirm(\'Wirklich löschen?\')
+} </script>
 </body>
 </html>'),
         'sid'        => '-1',
@@ -206,12 +208,12 @@ function wiki_install()
     $db->insert_query("templates", $insert_array);
 
     $insert_array = array(
-    'title'        => 'forenwiki_modcp_all_bit',
-    'template'    => $db->escape_string('<tr><td class="trow1" align="center"><strong>{$title}</strong></td><td class="trow2" align="center"><a href="misc.php?wikientry={$link}" target="_blank">{$linktitle}</a></td><td class="trow1" align="center"><a href="modcp.php?action=forenwiki_edit&edit={$wid}">Editieren</a> | <a href="modcp.php?action=forenwiki_all&delete={$wid}" onClick="askDelete()">Löschen</a></td></tr>'),
-    'sid'        => '-1',
-    'version'    => '',
-    'dateline'    => TIME_NOW
-);
+        'title'        => 'forenwiki_modcp_all_bit',
+        'template'    => $db->escape_string('<tr><td class="trow1" align="center"><strong>{$title}</strong></td><td class="trow2" align="center"><a href="misc.php?wikientry={$link}" target="_blank">{$linktitle}</a></td><td class="trow1" align="center"><a href="modcp.php?action=forenwiki_edit&edit={$wid}">Editieren</a> | <a href="modcp.php?action=forenwiki_all&delete={$wid}" onClick="askDelete()">Löschen</a></td></tr>'),
+        'sid'        => '-1',
+        'version'    => '',
+        'dateline'    => TIME_NOW
+    );
     $db->insert_query("templates", $insert_array);
 
     $insert_array = array(
@@ -919,8 +921,8 @@ function wiki_modcp() {
 
         $cid = "%";
 
-        if(isset($_POST['wiki_filter'])) {
-            $cid = $_POST['filter_category'];
+        if(isset($mybb->input['wiki_filter'])) {
+            $cid = $mybb->input['filter_category'];
         }
 
         $query = $db->query("SELECT *
