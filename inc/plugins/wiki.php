@@ -495,7 +495,39 @@ confirm(\'Wirklich löschen?\')
     );
     $db->insert_query("templates", $insert_array);
 
+    $insert_array = array(
+        'title'        => 'forenwiki_menu_entry',
+        'template'    => $db->escape_string('<tr><td class=\'wiki_links\'>&raquo; <a href=\'misc.php?wikientry={$link}\'>{$linktitle}</a> </td></tr>'),
+        'sid'        => '-1',
+        'version'    => '',
+        'dateline'    => TIME_NOW
+    );
+    $db->insert_query("templates", $insert_array);
 
+    $insert_array = array(
+        'title'        => 'forenwiki_menu_addentry',
+        'template'    => $db->escape_string('<tr><td class="wiki_links">&raquo; <a href="misc.php?action=add_wiki">{$lang->add_wiki}</a></td></tr>'),
+        'sid'        => '-1',
+        'version'    => '',
+        'dateline'    => TIME_NOW
+    );
+    $db->insert_query("templates", $insert_array);
+
+    $insert_array = array(
+        'title'        => 'forenwiki_catadd_formular',
+        'template'    => $db->escape_string('<form id="add_category" method="post" action="misc.php?action=add_wiki">
+		<table width="90%"><tr><td class="thead" colspan="2"><strong>{$lang->formular_category}</strong></td></tr>
+			<tr><td class="trow1"><strong>Kategorie</strong></td>
+				<td class="trow2"><input type="text" name="category" id="category" placeholder="Kategorie" class="textbox" required /> 
+				</td></tr>
+			<tr><td class="tcat" colspan="2" align="center"><input type="submit" name="add_wiki_category" value="Eintrag einreichen" id="submit" class="button"></td></tr>
+		</table>
+</form><br /><br />'),
+        'sid'        => '-1',
+        'version'    => '',
+        'dateline'    => TIME_NOW
+    );
+    $db->insert_query("templates", $insert_array);
 }
 
 function wiki_is_installed()
@@ -592,7 +624,7 @@ function wiki_misc()
 
     //Nur den Gruppen, die es erlaubt ist, neue Einträge zu machen, ist es erlaubt, den Link zu sehen.
     if (is_member($mybb->settings['wiki_allow_groups'])) {
-        $add_entry = "<tr><td class=\"trow1\"  style='padding-left: 5px;'>&raquo; <a href=\"misc.php?action=add_wiki\">Eintrag hinzufügen</a></td></tr>";
+        eval("\$add_entry = \"".$templates->get("forenwiki_menu_addentry")."\";");
     }
 
     //Generieren wir uns mal das Menü, welches sich Automatisch erweitert, wenn neue Einträge in der Datenbank erscheinen.
@@ -619,9 +651,10 @@ function wiki_misc()
             $altbg = alt_trow();
             $link = $row['link'];
             $linktitle = $row['linktitle'];
+            eval("\$entry .= \"".$templates->get("forenwiki_menu_entry")."\";");
+        }
 
-            $entry .= "<tr><td class='$altbg' style='padding-left: 5px;'>&raquo; <a href='misc.php?wikientry={$link}'>{$linktitle}</a> </td></tr>";
-        }  eval("\$forenwiki_menu_cat .= \"".$templates->get("forenwiki_menu_cat")."\";");
+        eval("\$forenwiki_menu_cat .= \"".$templates->get("forenwiki_menu_cat")."\";");
     }
 
     eval("\$wiki_menu = \"".$templates->get("forenwiki_menu")."\";");
@@ -667,14 +700,8 @@ function wiki_misc()
                     break;
             }
             if($mybb->usergroup['canmodcp'] == 1){
-                $new_cat = "<form id=\"add_category\" method=\"post\" action=\"misc.php?action=add_wiki\">
-		<table width=\"90%\"><tr><td class=\"thead\" colspan=\"2\"><strong>{$lang->formular_category}</strong></td></tr>
-			<tr><td class=\"trow1\"><strong>Kategorie</strong></td>
-				<td class=\"trow2\"><input type=\"text\" name=\"category\" id=\"category\" placeholder=\"Kategorie\" class=\"textbox\" required /> 
-				</td></tr>
-			<tr><td class=\"tcat\" colspan=\"2\" align=\"center\"><input type=\"submit\" name=\"add_wiki_category\" value=\"Eintrag einreichen\" id=\"submit\" class=\"button\"></td></tr>
-		</table>
-</form><br /><br />";
+
+                eval("\$new_cat = \"".$templates->get("forenwiki_catadd_formular")."\";");
             }
 
             if($_POST['add_wiki_category']){
