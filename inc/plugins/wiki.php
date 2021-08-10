@@ -121,7 +121,7 @@ function wiki_install()
         'title'        => 'forenwiki_menu',
         'template'    => $db->escape_string('<table width="100%">
 	<tr><td class="tcat"><strong>Menü</strong></td></tr>
-	<tr><td class="trow1"><a href="misc.php?action=wiki">Hauptseite</td></tr>
+	<tr><td class="trow1"><a href="misc.php?action=wiki">Hauptseite</a></td></tr>
 	{$add_entry}
 	{$forenwiki_menu_cat}
 </table>'),
