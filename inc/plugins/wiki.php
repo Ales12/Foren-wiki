@@ -539,6 +539,61 @@ confirm(\'Wirklich löschen?\')
         'dateline'    => TIME_NOW
     );
     $db->insert_query("templates", $insert_array);
+    //CSS einfügen
+    $css = array(
+        'name' => 'forenwiki.css',
+        'tid' => 1,
+        'attachedto' => '',
+        "stylesheet" =>    '.info_headline{
+	font-size: 30px;
+color: #0072BC;
+text-align: center;
+}
+
+.info_subline{
+	text-align: center;
+text-transform: uppercase;
+font-size: 11px;
+}
+
+.wiki_smalltext{
+	padding: 4px 20px;
+	text-align: justify;
+	font-size: 13px;
+}
+
+.nav_headline{
+font-size: 13px;
+text-transform: uppercase;
+text-align: center;
+color: #0072BC;
+}
+
+.navi_point{
+	padding: 5px 0 5px 3px;
+  text-transform: uppercase;
+  font-size: 11px;
+	letter-spacing: 1px;
+}
+
+.navi_point a{
+  text-transform: uppercase;
+  font-size: 11px;
+}
+        ',
+        'cachefile' => $db->escape_string(str_replace('/', '', 'forenwiki.css')),
+        'lastmodified' => time()
+    );
+
+    require_once MYBB_ADMIN_DIR . "inc/functions_themes.php";
+
+    $sid = $db->insert_query("themestylesheets", $css);
+    $db->update_query("themestylesheets", array("cachefile" => "css.php?stylesheet=" . $sid), "sid = '" . $sid . "'", 1);
+
+    $tids = $db->simple_select("themes", "tid");
+    while ($theme = $db->fetch_array($tids)) {
+        update_theme_stylesheet_list($theme['tid']);
+    }
 }
 
 function wiki_is_installed()
@@ -569,6 +624,15 @@ function wiki_uninstall()
 
     $db->delete_query("templates", "title LIKE '%forenwiki%'");
     rebuild_settings();
+
+    require_once MYBB_ADMIN_DIR . "inc/functions_themes.php";
+    $db->delete_query("themestylesheets", "name = 'forenwiki.css'");
+    $query = $db->simple_select("themes", "tid");
+    while ($theme = $db->fetch_array($query)) {
+        update_theme_stylesheet_list($theme['tid']);
+        rebuild_settings();
+    }
+
 }
 
 function wiki_activate()
