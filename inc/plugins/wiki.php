@@ -31,6 +31,7 @@ function wiki_install()
     {
         $db->query("CREATE TABLE `".TABLE_PREFIX."wiki_categories` (
           `cid` int(10) NOT NULL auto_increment,
+           `sort` int(10) NOT NULL ,
           `category` varchar(500) CHARACTER SET utf8 NOT NULL,
           PRIMARY KEY (`cid`)
         ) ENGINE=MyISAM".$db->build_create_table_collation());
@@ -38,6 +39,7 @@ function wiki_install()
         $db->query("CREATE TABLE `".TABLE_PREFIX."wiki_entries` (
           `wid` int(10) NOT NULL auto_increment,
           `cid` int(11) NOT NULL,
+            `sort` int(10) NOT NULL ,
           `linktitle` varchar(255) CHARACTER SET utf8 NOT NULL,
           `link` varchar(255) CHARACTER SET utf8 NOT NULL,
           `title` varchar(255) CHARACTER SET utf8 NOT NULL,
@@ -94,14 +96,12 @@ function wiki_install()
 {$header}
 <table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
 <tr>
-<td class="thead" colspan="2"><strong>{$lang->foren_wiki}</strong></td>
-</tr>
-<tr>
-<td class="trow1" align="center" valign="top" width="10%">
+
 {$wiki_menu}
-		</td>
-		<td class="trow1" align="center" valign="top" width="90%">
-			<h1>{$lang->foren_wiki}</h1>
+
+		<td class="trow1" align="center" valign="top" >
+			<div class="info_headline">{$lang->foren_wiki}</div>
+		<div class="wiki_smalltext">Hier kannst du einen kleinen Einleitungstext einfügen!</div>
 		</td>
 		</tr>
 </table>
@@ -119,12 +119,13 @@ function wiki_install()
 
     $insert_array = array(
         'title'        => 'forenwiki_menu',
-        'template'    => $db->escape_string('<table width="100%">
-	<tr><td class="tcat"><strong>Menü</strong></td></tr>
-	<tr><td class="trow1"><a href="misc.php?action=wiki">Hauptseite</a></td></tr>
+        'template'    => $db->escape_string('<td class="trow1" align="center" valign="top" width="20%"><table width="100%">
+	<tr><td class="tcat"><div class="nav_headline">Menü</div></td></tr>
+	<tr><td><div class="navi_point"><a href="misc.php?action=wiki">Hauptseite</a></div></td></tr>
 	{$add_entry}
 	{$forenwiki_menu_cat}
-</table>'),
+</table>
+</td>'),
         'sid'        => '-1',
         'version'    => '',
         'dateline'    => TIME_NOW
@@ -133,7 +134,7 @@ function wiki_install()
 
     $insert_array = array(
         'title'        => 'forenwiki_menu_cat',
-        'template'    => $db->escape_string('<tr><td class="tcat">{$category}</td></tr>
+        'template'    => $db->escape_string('<tr><td class="tcat"><div class="nav_headline">{$category}</div></td></tr>
 {$entry}'),
         'sid'        => '-1',
         'version'    => '',
@@ -247,9 +248,12 @@ confirm(\'Wirklich löschen?\')
 <form id="edit_category" method="post" action="modcp.php?action=forenwiki_cat_edit&cat_edit={$cid}">
 	<input type="hidden" name="cid" id="cid" value="{$cid}" class="textbox" required /> 
 		<table width="90%">
-			<tr><td class="trow1"><strong>Kategorie</strong></td>
+			<tr><td class="trow1"><strong>{$lang->newentry_cat}</strong>
+			<div class="smalltext">{$lang->newentry_cat_desc}</div></td>
 				<td class="trow2"><input type="text" name="category" id="category" value="{$category}" class="textbox" required /> 
 				</td></tr>
+									<tr><td class="trow1"><strong>{$lang->newentry_sort}</strong>
+			<div class="smalltext">{$lang->newentry_sort_desc}</div></td><td><input type="number" name="sort" id="sort" value="{$sort}" class="textbox" required /></td></tr>
 			<tr><td class="tcat" colspan="2" align="center"><input type="submit" name="edit_wiki_category" value="Eintrag einreichen" id="submit" class="button"></td></tr>
 		</table>
 </form><br />
@@ -344,22 +348,25 @@ confirm(\'Wirklich löschen?\')
 			<form id="edit_wiki" method="post" action="modcp.php?action=forenwiki_edit&edit={$wid}">	
 			<input type="hidden" name="wid" id="wid" value="{$wid}" class="textbox" />
 		<table width="100%">
-			<tr><td class="trow1"><strong>Kategorie</strong></td>
-				<td class="trow2"><select name="category" required>
-					<option value="%">Kategorie wählen</option>
-					{$edit_categories}
+	<tr><td class="trow1" width="70%"><strong>{$lang->newentry_cat_select}</strong></td>
+				<td class="trow2" width="30%"><select name="category" required>
+					<option value="%">{$lang->newentry_cat_select}</option>
+				{$edit_categories}
 					</select> 
 				</td></tr>
-			<tr><td class="trow1"><strong>Linkname</strong>
-			<div class="smalltext">Wie soll der Link im Menü stehen?</div></td><td class="trow2"><input type="text" name="linktitle" id="linktitle" value="{$linktitle}" class="textbox" required /> </td></tr>
-			<tr><td class="trow1"><strong>Link</strong>
-			<div class="smalltext">Wie soll der Link lauten? misc.php?wikientry=linkname</div></td><input type="text" name="link" id="link" value="{$link}" class="textbox" required /></td></tr>
-			<tr><td class="trow1"><strong>Überschrift</strong>
-			<div class="smalltext">Wie soll die Überschrift lauten?</div></td><td class="trow2"><input type="text" name="title" id="title" value="{$title}" class="textbox" required /></td></tr>
-			<tr><td class="trow1"><strong>Untertitel</strong>
-			<div class="smalltext">wenn ein Untertitel vorhanden ist, wie soll diser lauten</div></td><td class="trow2"><input type="text" name="subtitle" id="subtitle" value="{$subtitle}" class="textbox" /></td></tr>
-			<tr><td class="trow1" colspan="2"><strong>Wikieintrag</strong></td></tr>
-			<tr><td class="trow2" colspan="2"><textarea class="textarea" name="wikitext" id="wikitext" rows="6" cols="30" style="width: 95%">{$wikitext}</textarea></td></tr>
+			<tr><td class="trow1"><strong>{$lang->newentry_linktitle}</strong>
+			<div class="smalltext">{$lang->newentry_linktitle_desc}</div></td><td class="trow2"><input type="text" name="linktitle" id="linktitle" class="textbox" value="{$linktitle}" required /> </td></tr>
+				<tr><td class="trow1"><strong>{$lang->newentry_link}</strong>
+			<div class="smalltext">{$lang->newentry_link_desc}</div></td><td class="trow2"><input type="text" name="link" id="link" value="{$link}" class="textbox" required /></td></tr>
+									<tr><td class="trow1"><strong>{$lang->newentry_sort}</strong>
+			<div class="smalltext">{$lang->newentry_sort_desc}</div></td><td><input type="number" name="sort" id="sort" value="{$sort}"  class="textbox" required /></td></tr>
+			<tr><td class="trow1"><strong>{$lang->newentry_headline}</strong>
+			<div class="smalltext">{$lang->newentry_headline_desc}</div></td><td class="trow2"><input type="text" name="title" id="title" placeholder="Überschrift des Artikels" class="textbox" required /></td></tr>
+			<tr><td class="trow1"><strong>{$lang->newentry_subline}</strong>
+			<div class="smalltext">{$lang->newentry_subline_desc}</div></td><td class="trow2"><input type="text" name="subtitle" id="subtitle" placeholder="Linktitel" class="textbox" /></td></tr>
+			<tr><td class="trow1" colspan="2"><strong>{$lang->newentry_wikientry}</strong>
+			<div class="smalltext">{$lang->newentry_wikientry_desc}</div></td></tr>
+			<tr><td class="trow2" colspan="2"><textarea class="textarea" name="wikitext" id="wikitext" rows="20" cols="30" style="width: 95%">{$wikitext}</textarea></td></tr>
 			<tr><td class="tcat" colspan="2" align="center"><input type="submit" name="edit_wiki_entry" value="Eintrag editieren" id="submit" class="button"></td></tr>
 		</table>
 </form>
@@ -408,32 +415,34 @@ confirm(\'Wirklich löschen?\')
 {$header}
 <table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
 <tr>
-<td class="thead" colspan="2"><strong>{$lang->add_wiki}</strong></td>
-</tr>
-<tr>
-<td class="trow1" align="center" valign="top" width="10%">
+
 {$wiki_menu}
-		</td>
+	
 		<td class="trow1" align="center" valign="top">
 		{$new_cat}
 			
 			<form id="add_wiki" method="post" action="misc.php?action=add_wiki">
-		<table width="90%"><tr><td class="thead" colspan="2"><strong>{$lang->formular_entry}</strong></td></tr>
-			<tr><td class="trow1"><strong>Kategorie</strong></td>
-				<td class="trow2"><select name="category" required>
-					<option value="%">Kategorie wählen</option>
+		<table width="95%"><tr><td class="thead" colspan="2"><strong>{$lang->formular_entry}</strong></td></tr>
+			<tr><td class="trow1" width="70%"><strong>{$lang->newentry_cat_select}</strong></td>
+				<td class="trow2" width="30%"><select name="category" required>
+					<option value="%">{$lang->newentry_cat_select}</option>
 					{$categories}
 					</select> 
 				</td></tr>
-			<tr><td class="trow1"><strong>Linktitel</strong>
-			<div class="smalltext">Wie soll der Linkname im Menü lauten?</div></td><td class="trow2"><input type="text" name="linktitle" id="linktitle" placeholder="Linktitel" class="textbox" required /> </td></tr>
-				<tr><td class="trow1"><strong>Link</strong>
-				<div class="smalltext">Wie soll der Link lauten? misc.php?wikientry=linkname</div></td><td class="trow2"><input type="text" name="link" id="link" placeholder="todesser, orden etc." class="textbox" required /></td></tr>
-			<tr><td class="trow1"><strong>Überschrift</strong></td><td class="trow2"><input type="text" name="title" id="title" placeholder="Überschrift des Artikels" class="textbox" required /></td></tr>
-			<tr><td class="trow1"><strong>Untertitel</strong></td><td class="trow2"><input type="text" name="subtitle" id="subtitle" placeholder="Linktitel" class="textbox" /></td></tr>
-			<tr><td class="trow1" colspan="2"><strong>Wikieintrag</strong></td></tr>
-			<tr><td class="trow2" colspan="2"><textarea class="textarea" name="wikitext" id="wikitext" rows="6" cols="30" style="width: 95%"></textarea></td></tr>
-			<tr><td class="tcat" colspan="2" align="center"><input type="submit" name="add_wiki_entry" value="Eintrag einreichen" id="submit" class="button"></td></tr>
+			<tr><td class="trow1"><strong>{$lang->newentry_linktitle}</strong>
+			<div class="smalltext">{$lang->newentry_linktitle_desc}</div></td><td class="trow2"><input type="text" name="linktitle" id="linktitle" placeholder="Linktitel" class="textbox" required /> </td></tr>
+				<tr><td class="trow1"><strong>{$lang->newentry_link}</strong>
+			<div class="smalltext">{$lang->newentry_link_desc}</div></td><td class="trow2"><input type="text" name="link" id="link" placeholder="todesser, orden etc." class="textbox" required /></td></tr>
+									<tr><td class="trow1"><strong>{$lang->newentry_sort}</strong>
+			<div class="smalltext">{$lang->newentry_sort_desc}</div></td><td><input type="number" name="sort" id="sort" class="textbox" required /></td></tr>
+			<tr><td class="trow1"><strong>{$lang->newentry_headline}</strong>
+			<div class="smalltext">{$lang->newentry_headline_desc}</div></td><td class="trow2"><input type="text" name="title" id="title" placeholder="Überschrift des Eintrags" class="textbox" required /></td></tr>
+			<tr><td class="trow1"><strong>{$lang->newentry_subline}</strong>
+			<div class="smalltext">{$lang->newentry_subline_desc}</div></td><td class="trow2"><input type="text" name="subtitle" id="subtitle" placeholder="Untertitel des Eintrags" class="textbox" /></td></tr>
+			<tr><td class="trow1" colspan="2"><strong>{$lang->newentry_wikientry}</strong>
+			<div class="smalltext">{$lang->newentry_wikientry_desc}</div></td></tr>
+			<tr><td class="trow2" colspan="2"><textarea class="textarea" name="wikitext" id="wikitext" rows="20" cols="30" style="width: 95%"></textarea></td></tr>
+			<tr><td class="trow1" colspan="2" align="center"><input type="submit" name="add_wiki_entry" value="Eintrag einreichen" id="submit" class="button"></td></tr>
 		</table>
 </form>
 		</td>
@@ -497,7 +506,7 @@ confirm(\'Wirklich löschen?\')
 
     $insert_array = array(
         'title'        => 'forenwiki_menu_entry',
-        'template'    => $db->escape_string('<tr><td class=\'wiki_links\'>&raquo; <a href=\'misc.php?wikientry={$link}\'>{$linktitle}</a> </td></tr>'),
+        'template'    => $db->escape_string('<tr><td><div class="navi_point"><a href=\'misc.php?wikientry={$link}\'>{$linktitle}</a></div> </td></tr>'),
         'sid'        => '-1',
         'version'    => '',
         'dateline'    => TIME_NOW
@@ -506,7 +515,7 @@ confirm(\'Wirklich löschen?\')
 
     $insert_array = array(
         'title'        => 'forenwiki_menu_addentry',
-        'template'    => $db->escape_string('<tr><td class="wiki_links">&raquo; <a href="misc.php?action=add_wiki">{$lang->add_wiki}</a></td></tr>'),
+        'template'    => $db->escape_string('<tr><td><div class="navi_point"><a href="misc.php?action=add_wiki">{$lang->add_wiki}</a></div></td></tr>'),
         'sid'        => '-1',
         'version'    => '',
         'dateline'    => TIME_NOW
@@ -516,11 +525,13 @@ confirm(\'Wirklich löschen?\')
     $insert_array = array(
         'title'        => 'forenwiki_catadd_formular',
         'template'    => $db->escape_string('<form id="add_category" method="post" action="misc.php?action=add_wiki">
-		<table width="90%"><tr><td class="thead" colspan="2"><strong>{$lang->formular_category}</strong></td></tr>
-			<tr><td class="trow1"><strong>Kategorie</strong></td>
+		<table width="95%"><tr><td class="thead" colspan="4"><strong>{$lang->formular_category}</strong></td></tr>
+			<tr><td class="trow1"><strong>{$lang->newentry_cat}</strong>
+			<div class="smalltext">{$lang->newentry_cat_desc}</div></td>
 				<td class="trow2"><input type="text" name="category" id="category" placeholder="Kategorie" class="textbox" required /> 
-				</td></tr>
-			<tr><td class="tcat" colspan="2" align="center"><input type="submit" name="add_wiki_category" value="Eintrag einreichen" id="submit" class="button"></td></tr>
+					<td class="trow1"><strong>{$lang->newentry_sort}</strong>
+			<div class="smalltext">{$lang->newentry_sort_desc}</div></td><td><input type="number" name="sort" id="sort" class="textbox" required /></td></tr>
+			<tr><td class="trow1" colspan="4" align="center"><input type="submit" name="add_wiki_category" value="Eintrag einreichen" id="submit" class="button"></td></tr>
 		</table>
 </form><br /><br />'),
         'sid'        => '-1',
@@ -630,7 +641,7 @@ function wiki_misc()
     //Generieren wir uns mal das Menü, welches sich Automatisch erweitert, wenn neue Einträge in der Datenbank erscheinen.
     $query = $db->query("SELECT *
     FROM ".TABLE_PREFIX."wiki_categories
-    ORDER BY category ASC
+    ORDER BY sort ASC, category ASC
     ");
 
     while($cat = $db->fetch_array($query)){
@@ -644,7 +655,7 @@ function wiki_misc()
       FROM ".TABLE_PREFIX."wiki_entries
       WHERE cid = '".$cid."'
       AND accepted = 1
-      ORDER BY linktitle ASC
+      ORDER BY sort ASC, linktitle ASC
       ");
 
         while($row = $db->fetch_array($entry_query)){
@@ -706,6 +717,7 @@ function wiki_misc()
 
             if($_POST['add_wiki_category']){
                 $new_cat = array(
+                    "sort" => (int)$_POST['sort'],
                     "category" => $db->escape_string($_POST['category'])
                 );
 
@@ -731,6 +743,7 @@ function wiki_misc()
                 }
                 $new_entry = array(
                     "cid" => (int)$_POST['category'],
+                    "sort" => (int)$_POST['sort'],
                     "linktitle" => $db->escape_string($_POST['linktitle']),
                     "link" => $db->escape_string($_POST['link']),
                     "title" => $db->escape_string($_POST['title']),
@@ -778,6 +791,7 @@ function wiki_misc()
         $query = $db->query("SELECT *
         FROM ".TABLE_PREFIX."wiki_entries
         WHERE wid = '".$wid."'
+  
         ");
 
         while($row = $db->fetch_array($query)){
@@ -957,7 +971,7 @@ function wiki_modcp() {
 
         $cat_query = $db->query("SELECT *
             FROM ".TABLE_PREFIX."wiki_categories
-            ORDER BY category ASC
+            ORDER BY sort ASC, category ASC
             ");
 
         while($row = $db->fetch_array($cat_query)){
@@ -982,7 +996,7 @@ function wiki_modcp() {
         on (e.uid = u.uid)
         WHERE e.accepted =1
         and c.cid LIKE '".$cid."'
-          ORDER BY c.category ASC
+          ORDER BY c.category ASC, e.sort ASC
         ");
 
         while($row = $db->fetch_array($query)){
@@ -1042,8 +1056,6 @@ function wiki_modcp() {
         LEFT JOIN ".TABLE_PREFIX."users u
         on (e.uid = u.uid)
         WHERE e.wid = '".$wid."'
-      
-    
         ");
 
         $row = $db->fetch_array($query);
@@ -1055,7 +1067,7 @@ function wiki_modcp() {
         $link = "";
         $linktitle ="";
         $wikitext = "";
-
+        $sort = 0;
         $user = "";
 
         //Füllen wir mal alles mit Informationen
@@ -1069,7 +1081,7 @@ function wiki_modcp() {
         $wikitext = $row['wikitext'];
         $cid = $row['cid'];
         $wid = $row['wid'];
-
+        $sort = $row['sort'];
 
 
         $cat_query = $db->query("SELECT *
@@ -1096,6 +1108,7 @@ function wiki_modcp() {
             $wid = $mybb->input['wid'];
             $edit_entry = array(
                 "cid" => (int)$mybb->input['category'],
+                "sort" => (int)$_POST['sort'],
                 "linktitle" => $db->escape_string($mybb->input['linktitle']),
                 "link" => $db->escape_string($mybb->input['link']),
                 "title" => $db->escape_string($mybb->input['title']),
@@ -1129,14 +1142,15 @@ function wiki_modcp() {
         $row = $db->fetch_array($query);
 
         $category = "";
-
+        $sort = 0;
         $category = $row['category'];
-
+        $sort = $row['sort'];
 
         //Der neue Inhalt wird nun in die Datenbank eingefügt bzw. die alten daten Überschrieben.
         if ($_POST['edit_wiki_category']) {
             $cid = $mybb->input['cid'];
             $edit_entry = array(
+                "sort" => (int)$_POST['sort'],
                 "category" => $db->escape_string($mybb->input['category']),
             );
 
