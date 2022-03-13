@@ -361,9 +361,9 @@ confirm(\'Wirklich löschen?\')
 									<tr><td class="trow1"><strong>{$lang->newentry_sort}</strong>
 			<div class="smalltext">{$lang->newentry_sort_desc}</div></td><td><input type="number" name="sort" id="sort" value="{$sort}"  class="textbox" required /></td></tr>
 			<tr><td class="trow1"><strong>{$lang->newentry_headline}</strong>
-			<div class="smalltext">{$lang->newentry_headline_desc}</div></td><td class="trow2"><input type="text" name="title" id="title" placeholder="Überschrift des Artikels" class="textbox" required /></td></tr>
+			<div class="smalltext">{$lang->newentry_headline_desc}</div></td><td class="trow2"><input type="text" name="title" id="title"  value="{$title}" class="textbox" required /></td></tr>
 			<tr><td class="trow1"><strong>{$lang->newentry_subline}</strong>
-			<div class="smalltext">{$lang->newentry_subline_desc}</div></td><td class="trow2"><input type="text" name="subtitle" id="subtitle" placeholder="Linktitel" class="textbox" /></td></tr>
+			<div class="smalltext">{$lang->newentry_subline_desc}</div></td><td class="trow2"><input type="text" name="subtitle" id="subtitle"  value="{$subtitle}" class="textbox" /></td></tr>
 			<tr><td class="trow1" colspan="2"><strong>{$lang->newentry_wikientry}</strong>
 			<div class="smalltext">{$lang->newentry_wikientry_desc}</div></td></tr>
 			<tr><td class="trow2" colspan="2"><textarea class="textarea" name="wikitext" id="wikitext" rows="20" cols="30" style="width: 95%">{$wikitext}</textarea></td></tr>
