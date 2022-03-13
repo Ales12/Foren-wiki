@@ -1113,7 +1113,7 @@ function wiki_modcp() {
 
         $wid = $mybb->input['edit'];
 
-        $query = $db->query("SELECT *
+        $query = $db->query("SELECT *, e.sort
         FROM ".TABLE_PREFIX."wiki_entries e
         LEFT JOIN ".TABLE_PREFIX."wiki_categories c
         on (e.cid = c.cid)
@@ -1168,11 +1168,11 @@ function wiki_modcp() {
 
 
         //Der neue Inhalt wird nun in die Datenbank eingefügt bzw. die alten daten Überschrieben.
-        if($_POST['edit_wiki_entry']){
+        if($mybb->input['edit_wiki_entry']){
             $wid = $mybb->input['wid'];
             $edit_entry = array(
                 "cid" => (int)$mybb->input['category'],
-                "sort" => (int)$_POST['sort'],
+                "sort" => (int)$mybb->input['sort'],
                 "linktitle" => $db->escape_string($mybb->input['linktitle']),
                 "link" => $db->escape_string($mybb->input['link']),
                 "title" => $db->escape_string($mybb->input['title']),
