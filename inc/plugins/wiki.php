@@ -27,16 +27,19 @@ function wiki_install()
     global $db, $mybb;
 
     //Datenbank
-    if($db->engine=='mysql'||$db->engine=='mysqli')
-    {
-        $db->query("CREATE TABLE `".TABLE_PREFIX."wiki_categories` (
-          `cid` int(10) NOT NULL auto_increment,
-           `sort` int(10) NOT NULL ,
-          `category` varchar(500) CHARACTER SET utf8 NOT NULL,
-          PRIMARY KEY (`cid`)
-        ) ENGINE=MyISAM".$db->build_create_table_collation());
+$collation = $db->build_create_table_collation();
 
-        $db->query("CREATE TABLE `".TABLE_PREFIX."wiki_entries` (
+    $db->write_query("
+        CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."wiki_categories`(
+            `cid` int(10) NOT NULL auto_increment,
+            `sort` int(10) NOT NULL,
+            `category` varchar(500) CHARACTER SET utf8 NOT NULL,
+             PRIMARY KEY (`cid`)
+           ) ENGINE=MyISAM{$collation};
+    "); 
+
+        $db->write_query("
+        CREATE TABLE IF NOT EXISTS`".TABLE_PREFIX."wiki_entries` (
           `wid` int(10) NOT NULL auto_increment,
           `cid` int(11) NOT NULL,
             `sort` int(10) NOT NULL ,
@@ -48,8 +51,8 @@ function wiki_install()
                  `uid` int(10) NOT NULL,
                  `accepted` int(10) DEFAULT '0' NOT NULL,
           PRIMARY KEY (`wid`)
-        ) ENGINE=MyISAM".$db->build_create_table_collation());
-    }
+    ) ENGINE=MyISAM{$collation};
+    "); 
 
     //Einstellung
     $setting_group = array(
